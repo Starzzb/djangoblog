@@ -1,2 +1,4 @@
 Django~=5.1.2
 python-dotenv
+django-browser-reload
+whitenoise
