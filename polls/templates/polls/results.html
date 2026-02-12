@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ question.question_text }} - 投票结果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background-color: #1f2937;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .nav-link {
+            color: #9ca3af;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link.active {
+            color: #fff;
+            background-color: #374151;
+        }
+        
+        /* 主布局 */
+        .main-wrapper {
+            display: flex;
+            margin-top: 56px;
+            min-height: calc(100vh - 56px);
+        }
+        
+        /* 左侧边栏 */
+        .sidebar {
+            width: 260px;
+            background-color: #fff;
+            border-right: 1px solid #e5e7eb;
+            padding: 24px 0;
+            position: fixed;
+            left: 0;
+            top: 56px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            padding: 0 16px 24px;
+        }
+        
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+        
+        .sidebar-link {
+            display: block;
+            color: #374151;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-link:hover {
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+        
+        .sidebar-link.active {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 500;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 32px;
+            max-width: calc(100% - 260px);
+        }
+        
+        /* 面包屑 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+        
+        .breadcrumb a {
+            color: #6b7280;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            color: #1d4ed8;
+        }
+        
+        .breadcrumb .separator {
+            color: #d1d5db;
+        }
+        
+        .breadcrumb .current {
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        /* 结果容器 */
+        .results-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .results-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .results-header {
+            padding: 32px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        
+        .results-meta {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+        
+        .alert-success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        
+        /* 结果列表 */
+        .results-list {
+            padding: 32px;
+        }
+        
+        .result-item {
+            margin-bottom: 28px;
+        }
+        
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .result-label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .result-value {
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        /* 进度条 */
+        .progress-container {
+            height: 32px;
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #1d4ed8;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: width 0.5s ease;
+            min-width: 40px;
+        }
+        
+        .progress-bar.zero {
+            background-color: #e5e7eb;
+            color: #9ca3af;
+            justify-content: center;
+        }
+        
+        /* 统计汇总 */
+        .results-summary {
+            display: flex;
+            justify-content: space-around;
+            padding: 24px 32px;
+            background-color: #fafafa;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 按钮 */
+        .results-actions {
+            display: flex;
+            gap: 12px;
+            padding: 24px 32px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #1d4ed8;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e40af;
+        }
+        
+        .btn-secondary {
+            background-color: #fff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                max-width: calc(100% - 200px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="brand">Karbon's Blog</a>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">博客</a>
+                <a href="/polls/" class="nav-link active">投票</a>
+                <a href="/admin/" class="nav-link">管理后台</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主布局 -->
+    <div class="main-wrapper">
+        <!-- 左侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">投票导航</div>
+                <a href="/polls/" class="sidebar-link">🗳️ 投票列表</a>
+                <a href="/admin/polls/question/add/" class="sidebar-link">➕ 新建投票</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">功能</div>
+                <a href="/" class="sidebar-link">📄 博客首页</a>
+                <a href="/admin/" class="sidebar-link">⚙️ 后台管理</a>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 面包屑 -->
+            <nav class="breadcrumb">
+                <a href="/polls/">投票列表</a>
+                <span class="separator">/</span>
+                <span class="current">投票结果</span>
+            </nav>
+
+            <div class="results-container">
+                <div class="results-card">
+                    <div class="results-header">
+                        <h1 class="results-title">{{ question.question_text }}</h1>
+                        <div class="results-meta">
+                            发布于 {{ question.pub_date|date:"Y年m月d日" }}
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        感谢你的投票！以下是当前的投票结果：
+                    </div>
+                    
+                    <div class="results-list">
+                        {% with total_votes=0 %}
+                            {% for choice in question.choice_set.all %}
+                                {% with total_votes=total_votes|add:choice.votes %}{% endwith %}
+                            {% endfor %}
+                        {% endwith %}
+                        {% for choice in question.choice_set.all %}
+                            <div class="result-item">
+                                <div class="result-header">
+                                    <span class="result-label">{{ choice.choice_text }}</span>
+                                    <span class="result-value">{{ choice.votes }} 票</span>
+                                </div>
+                                <div class="progress-container">
+                                    {% if choice.votes > 0 %}
+                                        <div class="progress-bar" style="width: {% widthratio choice.votes total_votes 100 %}%;">
+                                            {{ choice.votes }}
+                                        </div>
+                                    {% else %}
+                                        <div class="progress-bar zero" style="width: 100%;">
+                                            0
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="results-summary">
+                        <div class="summary-item">
+                            <div class="summary-value">{{ total_votes }}</div>
+                            <div class="summary-label">总票数</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value">{{ question.choice_set.all.count }}</div>
+                            <div class="summary-label">选项数</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-actions">
+                        <a href="{% url 'polls:detail' question.id %}" class="btn btn-primary">再次投票</a>
+                        <a href="/polls/" class="btn btn-secondary">返回列表</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karbon's Blog</title>
+    <title>投票系统</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,7 @@
             line-height: 1.6;
         }
         
-        /* 顶部导航栏 - 深色 */
+        /* 顶部导航 */
         .header {
             background-color: #1f2937;
             color: #fff;
@@ -155,14 +155,14 @@
             font-size: 0.95rem;
         }
         
-        /* 文章网格 - 利用四角空间 */
-        .posts-container {
+        /* 投票列表 - 分散布局 */
+        .questions-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
         
-        .post-card {
+        .question-card {
             background: #fff;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
@@ -170,47 +170,71 @@
             transition: all 0.2s;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
-        .post-card:hover {
+        .question-card:hover {
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             border-color: #d1d5db;
         }
         
-        .post-header {
-            margin-bottom: 16px;
+        .question-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: #10b981;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
         
-        .post-title {
+        .question-title {
             font-size: 1.1rem;
             font-weight: 600;
             color: #111827;
             line-height: 1.4;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            padding-right: 60px;
         }
         
-        .post-meta {
+        .question-meta {
             display: flex;
             gap: 16px;
             font-size: 0.8rem;
             color: #6b7280;
+            margin-bottom: 16px;
         }
         
-        .post-meta span {
+        .question-options {
+            flex: 1;
+            margin-bottom: 16px;
+        }
+        
+        .option-preview {
             display: flex;
             align-items: center;
-            gap: 4px;
-        }
-        
-        .post-excerpt {
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 0.85rem;
             color: #4b5563;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            flex: 1;
+            border-bottom: 1px solid #f3f4f6;
         }
         
-        .post-footer {
+        .option-preview:last-child {
+            border-bottom: none;
+        }
+        
+        .option-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+        }
+        
+        .question-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -218,16 +242,24 @@
             border-top: 1px solid #f3f4f6;
         }
         
-        .read-more {
-            color: #1d4ed8;
+        .vote-btn {
+            background-color: #1d4ed8;
+            color: #fff;
             text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
             font-size: 0.85rem;
             font-weight: 500;
+            transition: all 0.2s;
         }
         
-        .read-more:hover {
-            color: #1e40af;
-            text-decoration: underline;
+        .vote-btn:hover {
+            background-color: #1e40af;
+        }
+        
+        .vote-count {
+            font-size: 0.8rem;
+            color: #6b7280;
         }
         
         /* 空状态 */
@@ -237,7 +269,6 @@
             background: #fff;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            grid-column: 1 / -1;
         }
         
         .empty-state h2 {
@@ -252,7 +283,7 @@
             font-size: 0.9rem;
         }
         
-        /* 统计信息 */
+        /* 统计栏 */
         .stats-bar {
             display: flex;
             gap: 32px;
@@ -301,9 +332,6 @@
                 max-width: 100%;
                 padding: 20px;
             }
-            .posts-container {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -313,8 +341,8 @@
         <div class="header-content">
             <a href="/" class="brand">Karbon's Blog</a>
             <nav class="nav-menu">
-                <a href="/" class="nav-link active">博客</a>
-                <a href="/polls/" class="nav-link">投票</a>
+                <a href="/" class="nav-link">博客</a>
+                <a href="/polls/" class="nav-link active">投票</a>
                 <a href="/admin/" class="nav-link">管理后台</a>
             </nav>
         </div>
@@ -325,73 +353,71 @@
         <!-- 左侧边栏 -->
         <aside class="sidebar">
             <div class="sidebar-section">
-                <div class="sidebar-title">导航</div>
-                <a href="/" class="sidebar-link active">📄 文章列表</a>
-                <a href="/admin/blog/post/add/" class="sidebar-link">✏️ 写文章</a>
+                <div class="sidebar-title">投票导航</div>
+                <a href="/polls/" class="sidebar-link active">🗳️ 投票列表</a>
+                <a href="/admin/polls/question/add/" class="sidebar-link">➕ 新建投票</a>
             </div>
             
             <div class="sidebar-section">
                 <div class="sidebar-title">功能</div>
-                <a href="/polls/" class="sidebar-link">🗳️ 投票系统</a>
+                <a href="/" class="sidebar-link">📄 博客首页</a>
                 <a href="/admin/" class="sidebar-link">⚙️ 后台管理</a>
-            </div>
-            
-            <div class="sidebar-section">
-                <div class="sidebar-title">关于</div>
-                <div class="sidebar-link" style="color: #6b7280; cursor: default;">
-                    Django 博客系统<br>
-                    <small style="font-size: 0.75rem;">v1.0</small>
-                </div>
             </div>
         </aside>
 
         <!-- 主内容区 -->
         <main class="main-content">
             <div class="content-header">
-                <h1 class="page-title">文章列表</h1>
-                <p class="page-subtitle">浏览所有已发布的文章</p>
+                <h1 class="page-title">投票列表</h1>
+                <p class="page-subtitle">参与投票，表达你的观点</p>
             </div>
             
             <!-- 统计栏 -->
             <div class="stats-bar">
                 <div class="stat-item">
-                    <span class="stat-value">{{ posts|length }}</span>
-                    <span class="stat-label">文章总数</span>
+                    <span class="stat-value">{{ latest_question_list|length }}</span>
+                    <span class="stat-label">投票总数</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">{{ posts|length }}</span>
-                    <span class="stat-label">已发布</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">1</span>
-                    <span class="stat-label">作者</span>
+                    <span class="stat-value">进行中</span>
+                    <span class="stat-label">状态</span>
                 </div>
             </div>
 
-            {% if posts %}
-                <div class="posts-container">
-                    {% for post in posts %}
-                        <article class="post-card">
-                            <div class="post-header">
-                                <h2 class="post-title">{{ post.title }}</h2>
-                                <div class="post-meta">
-                                    <span>👤 {{ post.author }}</span>
-                                    <span>📅 {{ post.published_date|date:"Y-m-d" }}</span>
-                                </div>
+            {% if latest_question_list %}
+                <div class="questions-container">
+                    {% for question in latest_question_list %}
+                        <div class="question-card">
+                            <span class="question-status">进行中</span>
+                            <h2 class="question-title">{{ question.question_text }}</h2>
+                            <div class="question-meta">
+                                <span>📅 {{ question.pub_date|date:"Y-m-d" }}</span>
                             </div>
-                            <div class="post-excerpt">
-                                {{ post.text|truncatewords:30 }}
+                            <div class="question-options">
+                                {% for choice in question.choice_set.all|slice:":3" %}
+                                    <div class="option-preview">
+                                        <span class="option-dot"></span>
+                                        {{ choice.choice_text }}
+                                    </div>
+                                {% endfor %}
+                                {% if question.choice_set.all.count > 3 %}
+                                    <div class="option-preview" style="color: #9ca3af;">
+                                        <span class="option-dot"></span>
+                                        还有 {{ question.choice_set.all.count|add:"-3" }} 个选项...
+                                    </div>
+                                {% endif %}
                             </div>
-                            <div class="post-footer">
-                                <a href="{% url 'post_detail' pk=post.pk %}" class="read-more">阅读全文 →</a>
+                            <div class="question-footer">
+                                <a href="{% url 'polls:detail' question.id %}" class="vote-btn">参与投票</a>
+                                <span class="vote-count">{{ question.choice_set.all.count }} 个选项</span>
                             </div>
-                        </article>
+                        </div>
                     {% endfor %}
                 </div>
             {% else %}
                 <div class="empty-state">
-                    <h2>暂无文章</h2>
-                    <p>请前往后台管理系统添加文章</p>
+                    <h2>暂无投票</h2>
+                    <p>请前往后台管理系统添加投票问题</p>
                 </div>
             {% endif %}
         </main>
