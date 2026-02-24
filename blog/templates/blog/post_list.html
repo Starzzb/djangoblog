@@ -1,312 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Karbon's Blog</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #212529;
-            line-height: 1.6;
-        }
-        
-        /* 顶部导航栏 - 深色 */
-        .header {
-            background-color: #1f2937;
-            color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 24px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .brand {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fff;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .nav-link {
-            color: #9ca3af;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .nav-link:hover {
-            color: #fff;
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .nav-link.active {
-            color: #fff;
-            background-color: #374151;
-        }
-        
-        /* 主布局 */
-        .main-wrapper {
-            display: flex;
-            margin-top: 56px;
-            min-height: calc(100vh - 56px);
-        }
-        
-        /* 左侧边栏 */
-        .sidebar {
-            width: 260px;
-            background-color: #fff;
-            border-right: 1px solid #e5e7eb;
-            padding: 24px 0;
-            position: fixed;
-            left: 0;
-            top: 56px;
-            bottom: 0;
-            overflow-y: auto;
-        }
-        
-        .sidebar-section {
-            padding: 0 16px 24px;
-        }
-        
-        .sidebar-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6b7280;
-            margin-bottom: 12px;
-            padding-left: 8px;
-        }
-        
-        .sidebar-link {
-            display: block;
-            color: #374151;
-            text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            margin-bottom: 4px;
-        }
-        
-        .sidebar-link:hover {
-            background-color: #f3f4f6;
-            color: #111827;
-        }
-        
-        .sidebar-link.active {
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            font-weight: 500;
-        }
-        
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 32px;
-            max-width: calc(100% - 260px);
-        }
-        
-        .content-header {
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .page-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 8px;
-        }
-        
-        .page-subtitle {
-            color: #6b7280;
-            font-size: 0.95rem;
-        }
-        
-        /* 文章网格 - 利用四角空间 */
-        .posts-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-        }
-        
-        .post-card {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 24px;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .post-card:hover {
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            border-color: #d1d5db;
-        }
-        
-        .post-header {
-            margin-bottom: 16px;
-        }
-        
-        .post-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #111827;
-            line-height: 1.4;
-            margin-bottom: 12px;
-        }
-        
-        .post-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-        
-        .post-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .post-excerpt {
-            color: #4b5563;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            flex: 1;
-        }
-        
-        .post-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 16px;
-            border-top: 1px solid #f3f4f6;
-        }
-        
-        .read-more {
-            color: #1d4ed8;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .read-more:hover {
-            color: #1e40af;
-            text-decoration: underline;
-        }
-        
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 80px 40px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            grid-column: 1 / -1;
-        }
-        
-        .empty-state h2 {
-            color: #374151;
-            font-size: 1.25rem;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .empty-state p {
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-        
-        /* 统计信息 */
-        .stats-bar {
-            display: flex;
-            gap: 32px;
-            margin-bottom: 32px;
-            padding: 20px 24px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-        }
-        
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #111827;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        /* 响应式 */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 200px;
-                max-width: calc(100% - 200px);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-                max-width: 100%;
-                padding: 20px;
-            }
-            .posts-container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'blog/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/post_list.css' %}">
 </head>
+
 <body>
     <!-- 顶部导航 -->
     <header class="header">
@@ -315,6 +18,7 @@
             <nav class="nav-menu">
                 <a href="/" class="nav-link active">博客</a>
                 <a href="/polls/" class="nav-link">投票</a>
+                <a href="/gallery/" class="nav-link">图库</a>
                 <a href="/admin/" class="nav-link">管理后台</a>
             </nav>
         </div>
@@ -326,16 +30,17 @@
         <aside class="sidebar">
             <div class="sidebar-section">
                 <div class="sidebar-title">导航</div>
-                <a href="/" class="sidebar-link active">📄 文章列表</a>
-                <a href="/admin/blog/post/add/" class="sidebar-link">✏️ 写文章</a>
+                <a href="/" class="sidebar-link active"> 文章列表</a>
+                <a href="{% url 'post_new' %}" class="sidebar-link"> 写文章</a>
             </div>
-            
+
             <div class="sidebar-section">
                 <div class="sidebar-title">功能</div>
-                <a href="/polls/" class="sidebar-link">🗳️ 投票系统</a>
-                <a href="/admin/" class="sidebar-link">⚙️ 后台管理</a>
+                <a href="/polls/" class="sidebar-link"> 投票系统</a>
+                <a href="/gallery/" class="sidebar-link"> 图库</a>
+                <a href="/admin/" class="sidebar-link"> 后台管理</a>
             </div>
-            
+
             <div class="sidebar-section">
                 <div class="sidebar-title">关于</div>
                 <div class="sidebar-link" style="color: #6b7280; cursor: default;">
@@ -351,7 +56,7 @@
                 <h1 class="page-title">文章列表</h1>
                 <p class="page-subtitle">浏览所有已发布的文章</p>
             </div>
-            
+
             <!-- 统计栏 -->
             <div class="stats-bar">
                 <div class="stat-item">
@@ -369,32 +74,33 @@
             </div>
 
             {% if posts %}
-                <div class="posts-container">
-                    {% for post in posts %}
-                        <article class="post-card">
-                            <div class="post-header">
-                                <h2 class="post-title">{{ post.title }}</h2>
-                                <div class="post-meta">
-                                    <span>👤 {{ post.author }}</span>
-                                    <span>📅 {{ post.published_date|date:"Y-m-d" }}</span>
-                                </div>
-                            </div>
-                            <div class="post-excerpt">
-                                {{ post.text|truncatewords:30 }}
-                            </div>
-                            <div class="post-footer">
-                                <a href="{% url 'post_detail' pk=post.pk %}" class="read-more">阅读全文 →</a>
-                            </div>
-                        </article>
-                    {% endfor %}
-                </div>
+            <div class="posts-container">
+                {% for post in posts %}
+                <article class="post-card">
+                    <div class="post-header">
+                        <h2 class="post-title">{{ post.title }}</h2>
+                        <div class="post-meta">
+                            <span> {{ post.author }}</span>
+                            <span>{{ post.published_date|date:"Y-m-d" }}</span>
+                        </div>
+                    </div>
+                    <div class="post-excerpt">
+                        {{ post.text|truncatewords:30 }}
+                    </div>
+                    <div class="post-footer">
+                        <a href="{% url 'post_detail' pk=post.pk %}" class="read-more">阅读全文 →</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
             {% else %}
-                <div class="empty-state">
-                    <h2>暂无文章</h2>
-                    <p>请前往后台管理系统添加文章</p>
-                </div>
+            <div class="empty-state">
+                <h2>暂无文章</h2>
+                <p>请前往后台管理系统添加文章</p>
+            </div>
             {% endif %}
         </main>
     </div>
 </body>
+
 </html>

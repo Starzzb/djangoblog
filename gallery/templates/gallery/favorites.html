@@ -1,0 +1,56 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+<h1 class="hero-title mb-4">
+    <i class="fas fa-heart me-2"></i>
+    我的收藏
+</h1>
+<h2 class="mb-4">收藏的作品</h2>
+
+<!-- 使用与主页完全相同的布局和样式 -->
+{% if artworks %}
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+    {% for artwork in artworks %}
+    <div class="col">
+        <div class="card gallery-card shadow-sm">
+            <div class="image-container position-relative">
+                <!-- 图片展示 -->
+                <img src="{{ MEDIA_URL }}gallery_images/{{ artwork.image_path }}" class="img-fluid" alt="AI Artwork">
+
+                <!-- 收藏按钮放在图片右上角（总是显示为已收藏状态） -->
+                <button class="btn btn-sm favorite-btn position-absolute top-0 end-0 m-2"
+                    data-artwork-id="{{ artwork.id }}"
+                    style="background-color: rgba(255,255,255,0.8); border: none; z-index: 10;">
+                    <i class="fas fa-heart favorite-icon favorited" data-artwork-id="{{ artwork.id }}"></i>
+                </button>
+
+                <!-- 悬停效果 -->
+                <div class="overlay">
+                    <div class="overlay-text">
+                        {{ artwork.prompt | linebreaksbr }}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body py-3">
+                <p class="card-text text-light small mb-3" style="opacity: 0.9;">
+                    {{ artwork.prompt | slice:":100" }}{% if artwork.prompt|length > 100 %}...{% endif %}
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'gallery:view' artwork.id %}" class="btn btn-primary btn-sm">查看详情</a>
+                    <a href="{% url 'gallery:edit' artwork.id %}" class="btn btn-outline-warning btn-sm">编辑</a>
+                    <a href="{% url 'gallery:delete' artwork.id %}" class="btn btn-outline-danger btn-sm"
+                        onclick="return confirm('确定要删除这件作品吗？')">删除</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-heart text-muted" style="font-size: 3rem;"></i>
+    <p class="mt-3">还没有收藏任何作品</p>
+    <a href="{% url 'gallery:index' %}" class="btn btn-primary">浏览图库</a>
+</div>
+{% endif %}
+{% endblock %}

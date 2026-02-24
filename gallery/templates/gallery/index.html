@@ -1,0 +1,54 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+
+
+<!-- 2. 主内容整块：用于统一淡出 -->
+<div id="mainContent">
+  <div class="container py-4">
+    <h1 class="hero-title mb-4"><i class="fas fa-brush me-2"></i>图库</h1>
+    <h2 class="mb-4">所有作品</h2>
+
+    {% if artworks %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+      {% for artwork in artworks %}
+      <div class="col">
+        <div class="card gallery-card shadow-sm">
+          <div class="image-container position-relative">
+            <img src="{{ MEDIA_URL }}gallery_images/{{ artwork.image_path }}" class="img-fluid" alt="AI Artwork">
+
+            <!-- 收藏按钮 -->
+            <button class="btn btn-sm favorite-btn position-absolute top-0 end-0 m-2" data-artwork-id="{{ artwork.id }}"
+              style="background-color: rgba(255,255,255,0.8); border: none; z-index: 10;">
+              <i class="fas fa-heart favorite-icon {% if artwork.favorites.exists %}favorited{% endif %}"
+                data-artwork-id="{{ artwork.id }}"></i>
+            </button>
+
+            <!-- 悬停文字 -->
+            <div class="overlay">
+              <div class="overlay-text">{{ artwork.prompt | linebreaksbr }}</div>
+            </div>
+          </div>
+
+          <div class="card-body py-3">
+            <p class="card-text text-light small mb-3" style="opacity: 0.9;">
+              {{ artwork.prompt | slice:":100" }}{% if artwork.prompt|length > 100 %}...{% endif %}
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+              <a href="{% url 'gallery:view' artwork.id %}" class="btn btn-primary btn-sm flex-grow-1">查看详情</a>
+              <!-- 编辑/删除移至详情页内，减少主页面视觉噪音 -->
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-image text-muted" style="font-size: 3rem;"></i>
+      <p class="mt-3">还没有任何作品，点击右下角 + 按钮添加新作品</p>
+    </div>
+    {% endif %}
+  </div><!-- /.container -->
+</div><!-- /#mainContent -->
+{% endblock %}

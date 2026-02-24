@@ -1,0 +1,151 @@
+<!-- templates/background.html -->
+<div id="galaxy-background">
+  <canvas id="galaxyCanvas"></canvas>
+</div>
+
+<style>
+  #galaxy-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    /* 艺术感背景：深空渐变 + 轻微噪点 */
+    background:
+      radial-gradient(ellipse at 50% 50%, #0a0a1a 0%, #000010 100%),
+      url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJub2lzZSI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOCIgbnVtT2N0YXZlcz0iNCIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjxmZUNvbG9yTWF0cml4IHR5cGU9InNhdHVyYXRlIiB2YWx1ZXM9IjAiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbnoaXNlKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==');
+  }
+
+  #galaxyCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => initGalaxyBackground());
+
+  function initGalaxyBackground() {
+    const canvas = document.getElementById('galaxyCanvas');
+    const ctx    = canvas.getContext('2d');
+    
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+
+    /* ---------- 银河参数 ---------- */
+    const centerX = canvas.width * 0.5;
+    const centerY = canvas.height * 0.5;
+    const maxRadius = Math.hypot(canvas.width, canvas.height) * 0.6;
+    const minRadius = maxRadius * 0.15;
+    const arms = 2;
+    const starsPerArm = 120;
+    const fixedStars = 200;
+
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    /* ---------- 星星类（椭圆轨道） ---------- */
+    class Star {
+      constructor() {
+        this.arm     = Math.floor(Math.random() * arms);
+        this.angle   = rand(0, Math.PI * 2);
+        this.radius  = rand(minRadius, maxRadius);
+        this.speed   = rand(0.0008, 0.002);
+        this.size    = rand(0.5, 1.8);
+        this.brightness = rand(0.4, 1);
+        this.flickerSpeed = rand(0.001, 0.003);
+        this.eccentricity = rand(0.65, 0.85);
+      }
+      update() {
+        this.angle += this.speed;
+        this.brightness += Math.sin(Date.now() * this.flickerSpeed) * 0.04;
+        this.brightness = Math.max(0.3, Math.min(1, this.brightness));
+      }
+      draw() {
+        const r = this.radius, a = r, b = r * (1 - this.eccentricity);
+        const x = centerX + a * Math.cos(this.angle + this.arm * Math.PI);
+        const y = centerY + b * Math.sin(this.angle + this.arm * Math.PI);
+        ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${this.brightness})`; ctx.fill();
+      }
+    }
+
+    /* ---------- 固定背景星 ---------- */
+    class FixedStar {
+      constructor() {
+        this.x = rand(0, canvas.width); this.y = rand(0, canvas.height);
+        this.size = rand(0.3, 0.8); this.brightness = rand(0.2, 0.5);
+        this.flickerSpeed = rand(0.0008, 0.002);
+      }
+      draw() {
+        this.brightness += Math.sin(Date.now() * this.flickerSpeed) * 0.02;
+        this.brightness = Math.max(0.2, Math.min(0.5, this.brightness));
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(173,216,230,${this.brightness})`; ctx.fill();
+      }
+    }
+
+    /* ---------- 彗星（椭圆轨道） ---------- */
+    class Comet {
+      constructor() {
+        this.arm = Math.floor(Math.random() * arms); this.angle = rand(0, Math.PI * 2);
+        this.radius = rand(minRadius, maxRadius); this.speed = rand(0.006, 0.012);
+        this.tail = []; this.maxTail = 30; this.opacity = 1;
+        this.eccentricity = rand(0.6, 0.8);
+      }
+      update() {
+        this.angle += this.speed;
+        const a = this.radius, b = this.radius * (1 - this.eccentricity);
+        const x = centerX + a * Math.cos(this.angle + this.arm * Math.PI);
+        const y = centerY + b * Math.sin(this.angle + this.arm * Math.PI);
+        this.tail.unshift({x, y}); if (this.tail.length > this.maxTail) this.tail.pop();
+      }
+      draw() {
+        if (this.tail.length < 2) return;
+        ctx.beginPath(); this.tail.forEach(p => ctx.lineTo(p.x, p.y));
+        const gradient = ctx.createLinearGradient(
+          this.tail[0].x, this.tail[0].y,
+          this.tail[this.tail.length - 1].x, this.tail[this.tail.length - 1].y
+        );
+        gradient.addColorStop(0, `rgba(255,255,255,${this.opacity})`);
+        gradient.addColorStop(1, `rgba(255,255,255,0)`);
+        ctx.strokeStyle = gradient; ctx.lineWidth = 2; ctx.stroke();
+
+        const head = this.tail[0];
+        ctx.beginPath(); ctx.arc(head.x, head.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${this.opacity})`; ctx.fill();
+      }
+    }
+
+    /* ---------- 初始化 ---------- */
+    const stars = []; for (let i = 0; i < arms * starsPerArm; i++) stars.push(new Star());
+    const fixed = []; for (let i = 0; i < fixedStars; i++) fixed.push(new FixedStar());
+    const comets = []; let lastComet = Date.now();
+    const cometInterval = 6000 + Math.random() * 8000;
+
+    // 关键修复：第120行，避免在forEach中修改数组
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  fixed.forEach(s => s.draw());
+  stars.forEach(s => { s.update(); s.draw(); });
+
+  if (Date.now() - lastComet > cometInterval && comets.length < 3) { // 限制彗星数量
+    comets.push(new Comet()); 
+    lastComet = Date.now();
+  }
+  
+  // 修复：反向遍历或使用filter安全删除
+  for (let i = comets.length - 1; i >= 0; i--) {
+    const c = comets[i];
+    c.update(); 
+    c.draw();
+    if (c.tail.length >= c.maxTail) {
+      comets.splice(i, 1); // 从后往前删除，不影响索引
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+</script>

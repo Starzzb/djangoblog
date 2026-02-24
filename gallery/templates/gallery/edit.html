@@ -1,0 +1,154 @@
+{% extends "gallery/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">编辑作品</h3>
+                    <!-- 收藏按钮 -->
+                    <button class="btn btn-sm favorite-btn" data-artwork-id="{{ artwork.id }}"
+                        style="background-color: rgba(255,255,255,0.8); border: none;">
+                        <i class="fas fa-heart favorite-icon {% if artwork.favorites.exists %}favorited{% endif %}"
+                            data-artwork-id="{{ artwork.id }}"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="{{ MEDIA_URL }}gallery_images/{{ artwork.image_path }}"
+                                class="img-fluid rounded mb-4"
+                                style="max-height: 400px; width: 100%; object-fit: contain;" alt="AI Artwork">
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="preview-section">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-eye me-2"></i>实时预览
+                                </h5>
+                                <div class="border rounded p-3 bg-dark text-light">
+                                    <h6>当前Prompt:</h6>
+                                    <p class="text-light small mb-2" style="opacity: 0.9;">{{ artwork.prompt |
+                                        slice:":100" }}{% if artwork.prompt|length > 100 %}...{% endif %}</p>
+                                    <h6>当前Parameters:</h6>
+                                    <p class="text-light small" style="opacity: 0.9;">{{ artwork.parameters |
+                                        slice:":100" }}{% if artwork.parameters|length > 100 %}...{% endif %}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-pen-alt me-2 text-primary"></i>Prompt
+                            </label>
+                            <div class="position-relative">
+                                <textarea name="prompt" class="form-control" rows="6" required
+                                    style="font-family: monospace;">{{ artwork.prompt }}</textarea>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2 copy-btn"
+                                    data-clipboard-text="{{ artwork.prompt }}">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                描述您想要的图像内容，支持自然语言描述
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-cog me-2 text-success"></i>Parameters
+                            </label>
+                            <div class="position-relative">
+                                <textarea name="parameters" class="form-control" rows="8" required
+                                    style="font-family: monospace;">{{ artwork.parameters }}</textarea>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2 copy-btn"
+                                    data-clipboard-text="{{ artwork.parameters }}">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                图像生成的具体参数设置
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                <i class="fas fa-save me-2"></i>保存修改
+                            </button>
+                            <a href="{% url 'gallery:view' artwork.id %}" class="btn btn-outline-secondary flex-grow-1">
+                                <i class="fas fa-times me-2"></i>取消
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>快速操作</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'gallery:view' artwork.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-2"></i>查看作品
+                        </a>
+                        <a href="{% url 'gallery:index' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>返回主页
+                        </a>
+                        <a href="{% url 'gallery:delete' artwork.id %}" class="btn btn-outline-danger"
+                            onclick="return confirm('确定要删除这个作品吗？此操作不可恢复！')">
+                            <i class="fas fa-trash me-2"></i>删除作品
+                        </a>
+                    </div>
+
+                    <hr>
+
+                    <div class="info-section">
+                        <h6 class="text-muted mb-3"><i class="fas fa-info-circle me-2"></i>作品信息</h6>
+                        <div class="small">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>ID:</span>
+                                <span class="text-muted">#{{ artwork.id }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>文件名:</span>
+                                <span class="text-muted">{{ artwork.image_path }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>修改前Prompt长度:</span>
+                                <span class="text-muted">{{ artwork.prompt|length }} 字符</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>修改前Parameters长度:</span>
+                                <span class="text-muted">{{ artwork.parameters|length }} 字符</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="tips-section">
+                        <h6 class="text-muted mb-3"><i class="fas fa-lightbulb me-2"></i>编辑提示</h6>
+                        <ul class="small text-muted ps-4 mb-0">
+                            <li>修改后记得保存</li>
+                            <li>支持多行文本编辑</li>
+                            <li>可以随时复制现有内容</li>
+                            <li>使用复制按钮快速粘贴</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

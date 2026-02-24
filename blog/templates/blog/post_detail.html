@@ -1,288 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ post.title }} - Karbon's Blog</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #212529;
-            line-height: 1.6;
-        }
-        
-        /* 顶部导航 */
-        .header {
-            background-color: #1f2937;
-            color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 24px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .brand {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fff;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .nav-link {
-            color: #9ca3af;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .nav-link:hover {
-            color: #fff;
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .nav-link.active {
-            color: #fff;
-            background-color: #374151;
-        }
-        
-        /* 主布局 */
-        .main-wrapper {
-            display: flex;
-            margin-top: 56px;
-            min-height: calc(100vh - 56px);
-        }
-        
-        /* 左侧边栏 */
-        .sidebar {
-            width: 260px;
-            background-color: #fff;
-            border-right: 1px solid #e5e7eb;
-            padding: 24px 0;
-            position: fixed;
-            left: 0;
-            top: 56px;
-            bottom: 0;
-            overflow-y: auto;
-        }
-        
-        .sidebar-section {
-            padding: 0 16px 24px;
-        }
-        
-        .sidebar-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6b7280;
-            margin-bottom: 12px;
-            padding-left: 8px;
-        }
-        
-        .sidebar-link {
-            display: block;
-            color: #374151;
-            text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            margin-bottom: 4px;
-        }
-        
-        .sidebar-link:hover {
-            background-color: #f3f4f6;
-            color: #111827;
-        }
-        
-        .sidebar-link.active {
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            font-weight: 500;
-        }
-        
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 32px;
-            max-width: calc(100% - 260px);
-        }
-        
-        /* 面包屑导航 */
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 24px;
-            font-size: 0.85rem;
-        }
-        
-        .breadcrumb a {
-            color: #6b7280;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            color: #1d4ed8;
-        }
-        
-        .breadcrumb .separator {
-            color: #d1d5db;
-        }
-        
-        .breadcrumb .current {
-            color: #374151;
-            font-weight: 500;
-        }
-        
-        /* 文章卡片 */
-        .article-container {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .article-header {
-            padding: 32px;
-            border-bottom: 1px solid #e5e7eb;
-            background-color: #fafafa;
-        }
-        
-        .article-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #111827;
-            line-height: 1.3;
-            margin-bottom: 16px;
-        }
-        
-        .article-meta {
-            display: flex;
-            gap: 24px;
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-        
-        .article-meta span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .article-content {
-            padding: 40px;
-            font-size: 1.05rem;
-            line-height: 1.8;
-            color: #374151;
-        }
-        
-        .article-content p {
-            margin-bottom: 20px;
-        }
-        
-        /* 文章底部操作栏 */
-        .article-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 32px;
-            background-color: #fafafa;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .btn-secondary {
-            background-color: #fff;
-            color: #374151;
-            border: 1px solid #d1d5db;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #f9fafb;
-            border-color: #9ca3af;
-        }
-        
-        .btn-primary {
-            background-color: #1d4ed8;
-            color: #fff;
-        }
-        
-        .btn-primary:hover {
-            background-color: #1e40af;
-        }
-        
-        /* 响应式 */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 200px;
-                max-width: calc(100% - 200px);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-                max-width: 100%;
-                padding: 20px;
-            }
-            .article-title {
-                font-size: 1.5rem;
-            }
-            .article-content {
-                padding: 24px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'blog/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/post_detail.css' %}">
 </head>
+
 <body>
     <!-- 顶部导航 -->
     <header class="header">
@@ -291,6 +18,7 @@
             <nav class="nav-menu">
                 <a href="/" class="nav-link active">博客</a>
                 <a href="/polls/" class="nav-link">投票</a>
+                <a href="/gallery/" class="nav-link">图库</a>
                 <a href="/admin/" class="nav-link">管理后台</a>
             </nav>
         </div>
@@ -302,14 +30,15 @@
         <aside class="sidebar">
             <div class="sidebar-section">
                 <div class="sidebar-title">导航</div>
-                <a href="/" class="sidebar-link active">📄 文章列表</a>
-                <a href="/admin/blog/post/add/" class="sidebar-link">✏️ 写文章</a>
+                <a href="/" class="sidebar-link active"> 文章列表</a>
+                <a href="{% url 'post_new' %}" class="sidebar-link"> 写文章</a>
             </div>
-            
+
             <div class="sidebar-section">
                 <div class="sidebar-title">功能</div>
-                <a href="/polls/" class="sidebar-link">🗳️ 投票系统</a>
-                <a href="/admin/" class="sidebar-link">⚙️ 后台管理</a>
+                <a href="/polls/" class="sidebar-link"> 投票系统</a>
+                <a href="/gallery/" class="sidebar-link"> 图库</a>
+                <a href="/admin/" class="sidebar-link"> 后台管理</a>
             </div>
         </aside>
 
@@ -327,22 +56,26 @@
                 <header class="article-header">
                     <h1 class="article-title">{{ post.title }}</h1>
                     <div class="article-meta">
-                        <span>👤 {{ post.author }}</span>
-                        <span>📅 {{ post.published_date|date:"Y年m月d日 H:i" }}</span>
-                        <span>📝 {{ post.text|wordcount }} 字</span>
+                        <span> {{ post.author }}</span>
+                        <span> {{ post.published_date|date:"Y年m月d日 H:i" }}</span>
+                        <span> {{ post.text|wordcount }} 字</span>
                     </div>
                 </header>
-                
+
                 <div class="article-content">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                    {% endif %}
                     {{ post.text|linebreaks }}
                 </div>
-                
+
                 <div class="article-actions">
                     <a href="/" class="btn btn-secondary">← 返回文章列表</a>
-                    <a href="/polls/" class="btn btn-primary">🗳️ 去投票</a>
+                    <a href="/polls/" class="btn btn-primary"> 去投票</a>
                 </div>
             </article>
         </main>
     </div>
 </body>
+
 </html>

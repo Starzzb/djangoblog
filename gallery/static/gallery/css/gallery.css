@@ -1,0 +1,410 @@
+/* 科幻宇宙主题色彩系统 */
+/* 定义自定义字体 */
+
+:root {
+    --primary-color: #6366f1; /* 紫蓝色主色调 */
+    --primary-hover: #4f46e5;
+    --secondary-color: #8b5cf6; /* 紫色辅助色 */
+    --accent-color: #06b6d4; /* 青色强调色 */
+    --space-blue: #0f172a; /* 深空蓝 */
+    --space-dark: #020617; /* 极深空 */
+    --space-purple: #7e22ce; /* 宇宙紫 */
+    --space-cyan: #0891b2; /* 宇宙青 */
+    --neon-blue: #0ea5e9; /* 霓虹蓝 */
+    --neon-purple: #a855f7; /* 霓虹紫 */
+    --glow-color: rgba(103, 232, 249, 0.3); /* 发光效果 */
+    --text-primary: #e2e8f0; /* 浅灰白 */
+    --text-secondary: #94a3b8; /* 浅灰色 */
+    --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --border-radius: 16px;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 基础背景 */
+body {
+    background-color: var(--space-dark);
+    color: var(--text-primary);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* 科幻宇宙风格的卡片设计 */
+.gallery-card {
+    position: relative;
+    transition: var(--transition-smooth);
+    overflow: hidden;
+    height: 100%;
+    border: none !important;
+    border-radius: var(--border-radius) !important;
+    background: rgba(15, 23, 42, 0.6); /* 半透明深空蓝 */
+    backdrop-filter: blur(10px); /* 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 
+        0 0 20px rgba(103, 232, 249, 0.1), /* 青色发光 */
+        0 0 40px rgba(139, 92, 246, 0.1), /* 紫色发光 */
+        var(--shadow-light);
+    border: 1px solid rgba(103, 232, 249, 0.2); /* 青色边框 */
+    will-change: transform;
+}
+
+/* 卡片悬浮发光效果 */
+.gallery-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, var(--glow-color) 0%, transparent 70%);
+    opacity: 0;
+    transition: var(--transition-smooth);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 卡片悬停效果 */
+.gallery-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 
+        0 0 40px rgba(103, 232, 249, 0.3),
+        0 0 80px rgba(139, 92, 246, 0.2),
+        var(--shadow-heavy) !important;
+    border-color: rgba(103, 232, 249, 0.5);
+}
+
+.gallery-card:hover::before {
+    opacity: 1;
+}
+
+/* 图片容器 */
+.image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: calc(var(--border-radius) - 4px);
+    aspect-ratio: 1/1;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-smooth);
+}
+
+.gallery-card:hover .image-container img {
+    transform: scale(1.05);
+}
+
+/* 悬停文字覆盖层 */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(2, 6, 23, 0.9) 0%,
+        rgba(15, 23, 42, 0.95) 100%
+    );
+    opacity: 0;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 2;
+}
+
+.overlay-text {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-height: 100%;
+    overflow-y: auto;
+    transform: translateY(60px);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: fadeInUp 0.6s ease forwards;
+    animation-delay: 0.1s;
+    opacity: 0;
+    text-shadow: 0 0 10px rgba(103, 232, 249, 0.5);
+}
+
+@keyframes fadeInUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 悬停时显示 */
+.gallery-card:hover .overlay {
+    opacity: 1;
+}
+
+.gallery-card:hover .overlay-text {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 科幻滚动条 */
+.overlay-text::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overlay-text::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple));
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--glow-color);
+}
+
+.overlay-text::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* 科幻浮动按钮 */
+.fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    box-shadow: 
+        0 0 20px rgba(99, 102, 241, 0.5),
+        var(--shadow-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    z-index: 1000;
+}
+
+.fab:hover {
+    transform: scale(1.1) rotate(180deg);
+    box-shadow: 
+        0 0 40px rgba(99, 102, 241, 0.8),
+        var(--shadow-heavy);
+}
+
+/* 收藏按钮样式 */
+.favorite-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.favorite-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.favorite-icon {
+    color: #94a3b8;
+    transition: var(--transition-smooth);
+}
+
+.favorite-icon.favorited {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.favorite-btn:hover .favorite-icon {
+    color: #ef4444;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .gallery-card:hover {
+        transform: translateY(-8px) scale(1.01);
+    }
+    
+    .overlay-text {
+        font-size: 0.85rem;
+    }
+    
+    .fab {
+        width: 56px;
+        height: 56px;
+        bottom: 24px;
+        right: 24px;
+    }
+}
+/* ============================================
+   侧边栏组件样式 - 缺失的关键部分
+   ============================================ */
+
+/* 侧边栏抽屉 - 默认隐藏在左侧屏幕外 */
+.sidebar-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.95); /* 深空蓝半透明 */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(103, 232, 249, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    transform: translateX(-100%); /* 默认隐藏在左侧 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* 侧边栏打开状态 */
+.sidebar-drawer.show {
+    transform: translateX(0);
+}
+
+/* 侧边栏遮罩层 - 点击可关闭 */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1030;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 左上角菜单按钮 - 固定在正确位置 */
+.sidebar-toggle-btn {
+    position: fixed !important; /* 关键：固定定位 */
+    top: 20px;
+    left: 20px;
+    z-index: 1020; /* 低于侧边栏但高于主内容 */
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 
+        0 0 20px rgba(99, 102, 241, 0.4),
+        0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-toggle-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 30px rgba(99, 102, 241, 0.6),
+        0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 侧边栏打开时，按钮可以有个小位移提示 */
+.sidebar-drawer.show ~ .sidebar-toggle-btn {
+    left: 300px; /* 移到侧边栏右侧，可选效果 */
+    transform: rotate(90deg); /* 变成X形状提示 */
+}
+
+/* 侧边栏内部导航样式优化 */
+.sidebar-drawer .nav-link {
+    color: var(--text-secondary) !important;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.sidebar-drawer .nav-link:hover,
+.sidebar-drawer .nav-link.active {
+    color: var(--text-primary) !important;
+    background: rgba(103, 232, 249, 0.1);
+    border-color: rgba(103, 232, 249, 0.3);
+    box-shadow: 0 0 15px rgba(103, 232, 249, 0.1);
+    transform: translateX(5px);
+}
+
+/* 主内容区域适配 - 给固定按钮留出空间 */
+.container.py-4 {
+    padding-top: 80px !important; /* 给左上角按钮留出空间 */
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+    z-index: 1; /* 确保在主内容层 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .sidebar-drawer {
+        width: 260px;
+    }
+    
+    .sidebar-toggle-btn {
+        top: 16px;
+        left: 16px;
+        width: 44px;
+        height: 44px;
+    }
+    
+    .container.py-4 {
+        padding-top: 72px !important;
+    }
+}
+
+/* 防止侧边栏打开时背景滚动 */
+body.sidebar-open {
+    overflow: hidden;
+}
+html, body {
+  height: 100%;
+  overflow-x: hidden !important;
+}
+
+body:not(.sidebar-open) {
+  overflow-y: auto !important;
+}
+
+.main-content {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  padding-top: 20px;
+}
+
+.container.py-4 {
+  padding-top: 80px !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* 确保在所有情况下内容可滚动 */
+.content-wrapper {
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+  padding-bottom: 40px;
+}
